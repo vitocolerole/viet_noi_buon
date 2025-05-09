@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Viết nỗi buồn</title>
+  <style>
+    body {
+      background: url('79bcfdf393de218078cf.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Georgia', serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #ff6600;
+    }
+
+    .container {
+      position: relative;
+      width: 80%;
+      max-width: 600px;
+    }
+
+    #realInput {
+      width: 100%;
+      height: 60px;
+      padding: 15px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-family: 'Georgia', serif;
+      background: linear-gradient(145deg, #ffe4e1, #fff);
+      box-shadow: inset -5px -5px 10px #fff, inset 5px 5px 10px #eac0c0;
+      color: transparent;
+      caret-color: #333;
+      resize: none;
+    }
+
+    .char {
+      display: inline-block;
+      transition: all 0.5s ease;
+    }
+
+    .vanish {
+      color: orangered;
+      text-shadow: 0 0 4px orange, 0 0 8px red;
+      opacity: 0;
+      transform: scale(1.2) translateY(-10px);
+      filter: blur(2px);
+    }
+
+    #displayText {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 15px 20px;
+      width: 100%;
+      height: 160px;
+      pointer-events: none;
+      white-space: pre-wrap;
+      font-size: 16px;
+      font-family: 'Georgia', serif;
+      color: #333;
+    }
+
+    /* Menu ngôn ngữ */
+    .language-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .language-menu select {
+      font-size: 16px;
+      color: #fff;
+      background-color: transparent;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+    }
+    #qrContainer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+    }
+
+    #qrContainer.show {
+    opacity: 1;
+    }
+
+    #qrContainer img {
+    width: 100px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    #qrMessage {
+    color: white;
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-shadow: 0 0 5px black;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Menu chọn ngôn ngữ -->
+  <div class="language-menu">
+    <select id="languageSelect" onchange="changeLanguage()">
+      <option value="en">English</option>
+      <option value="vi">Tiếng Việt</option>
+    </select>
+  </div>
+
+  <h1 id="title">Viết ra điều khiến bạn nặng lòng...</h1>
+
+  <div class="container">
+    <textarea id="realInput" placeholder="Bạn rồi sẽ ổn thôi..." oninput="resetBurnTimer()"></textarea>
+    <div id="displayText"></div>
+  </div>
+
+  <script>
+    let burnTimeout = null;
+    let isBurning = false;
+
+    const realInput = document.getElementById('realInput');
+    const displayText = document.getElementById('displayText');
+    const title = document.getElementById('title');
+
+    // Chức năng đổi ngôn ngữ
+    function changeLanguage() {
+      const lang = document.getElementById('languageSelect').value;
+
+      if (lang === 'vi') {
+        title.textContent = 'Viết ra điều khiến bạn nặng lòng...';
+        realInput.placeholder = 'Bạn rồi sẽ ổn thôi...';
+      } else {
+        title.textContent = 'Write down what burdens you...';
+        realInput.placeholder = 'You will be fine...';
+      }
+    }
+
+    function resetBurnTimer() {
+      if (burnTimeout) clearTimeout(burnTimeout);
+      updateDisplayText();
+      burnTimeout = setTimeout(burnEachChar, 5000);
+    }
+
+    function updateDisplayText() {
+      const text = realInput.value;
+      displayText.innerHTML = '';
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        if (char === '\n') {
+          displayText.appendChild(document.createElement('br'));
+        } else {
+          const span = document.createElement('span');
+          span.className = 'char';
+          span.textContent = char;
+          displayText.appendChild(span);
+        }
+      }
+    }
+
+    function burnEachChar() {
+      if (isBurning) return;
+      isBurning = true;
+
+      const chars = document.querySelectorAll('.char');
+      let index = chars.length - 1;
+
+      const burnInterval = setInterval(() => {
+        if (index < 0) {
+          clearInterval(burnInterval);
+          displayText.innerHTML = '';
+          realInput.value = '';
+          isBurning = false;
+          // Hiện ảnh QR
+            //document.getElementById('qrImage').classList.add('show');
+            //const qrContainer = document.getElementById('qrContainer');
+            //qrContainer.classList.add('show');
+
+            // Tự động ẩn sau 10 giây
+            //setTimeout(() => {
+            //qrContainer.classList.remove('show');
+            //}, 10000);
+
+            return;
+          //return;
+        }
+        chars[index].classList.add('vanish');
+        index--;
+      }, 150); // Xoá từng chữ mỗi 150ms
+    }
+
+    realInput.addEventListener('input', resetBurnTimer);
+  </script>
+  
+  <div id="qrContainer">
+    <div id="qrMessage">Chúc bạn tốt lành</div>
+    <img src="1000001882.jpg" alt="QR tài khoản" />
+  </div>
+</body>
+</html>
